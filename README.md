@@ -4,7 +4,7 @@
 
 # Manchester Encoder with Configurable Bitrate Based on CLB Using the PIC16F13145 Microcontroller with MCC Melody
 
-The repository contains the Manchester Encoder, an MPLAB® X project, using Core Independent Peripherals (CIPs) by following the interaction between Custom Logic Block (CLB), Timers (TMR0) and Universal Asynchronous Receiver-Transmitter (UART) peripherals.
+The repository contains a Manchester Encoder implementation in hardware using the Configurable Logic Block (CLB). It uses other peripherals to support the CLB including Timers (TMR0) and Universal Asynchronous Receiver-Transmitter (UART) peripherals.
 
 The CLB peripheral is a collection of logic elements that can be programmed to perform a wide variety of digital logic functions. The logic function may be completely combinatorial, sequential, or a combination of the two, enabling users to incorporate hardware-based custom logic into their applications.
 
@@ -46,13 +46,25 @@ This project is a CIP implementation of a Manchester encoder with configurable b
 
 <br><img src="images/clb_encoder_circuit.PNG" width="1000">
 
+The ManchesterEncoder.clb file can be imported into [logic.microchip.com/clbsynthesizer](https://logic.microchip.com/clbsynthesizer/) to better view the circuit.
+
 The CLB software input register is used for the encoder data and control functionality, as noted below:
 
 - Encoder input data register (CLBSWIN[15:8])
 - Encoder reset (CLBSWIN[0])
-- Encoder enable (CLBSWIN[1])
+- Encoder enable (CLBSWIN[1])   
 
-The raw data is recevied via serial communication by the UART peripheral and stored in a buffer. The CPU writes the data to the encoder input register after which the encoder is enabled. The CLB encoder uses the internal hardware counter to select each bit and encode it using a LUT. To allow back-to-back transmission of the data, the last three bits are double buffered. An interrupt is generated once the last three bits are loaded into the local buffer. The interrupt is used by the main application to write the next byte to the encoder input data register or to disable the encoder. These actions are performed only after the complete transmission of the current byte. The implemented logic uses the Timer 0 overflow (TMR0_OVF) to perform the Manchester encoded signal transitions, and therefore the bitrate can be easily configured by modifing the TMR0 period.    
+The raw data is recevied via serial communication by the UART peripheral and stored in a buffer. The CPU writes the data to the encoder input register after which the encoder is enabled. The CLB internal Hardware Counter and four Lookup Tables (LUT) are used to select each data bit individually. The equivalent schematic of one LUT is presented below:
+
+<br><img src="images/bit_selection_LUT.PNG" width="400">
+
+The Hardware Counter is an eight state ring counter meaning that only one data bit from the input register is selected at a specific time. This allows a parallel to serial transmission conversion of the data stored in the input register. The output stream is then Manchester-encoded using an additional LUT. Its equivalent schematic is presented below:
+
+<br><img src="images/encoder_LUT.PNG" width="400">
+
+To allow back-to-back data transmission, the last three data bits are buffered using additional flip-flops. When the Hardware Counter reaches the fourth state (COUNT_IS_4), the last three bits are loaded into the buffer (flip-flops) and an interrupt flag is set. The interrupt flag is used by the main application to either write the next byte to the encoder input data register or disable the encoder. These actions are performed only after the complete transmission of the current byte. The implemented logic uses the Timer 0 overflow (TMR0_OVF) to perform the Manchester-encoded signal transitions, and therefore the bitrate can be easily configured by modifing the TMR0 period.
+
+<br><img src="images/back_to_back_transmission.png" width="1000">
 
 ## Setup 
 
