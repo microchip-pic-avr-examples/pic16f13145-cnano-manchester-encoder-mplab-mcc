@@ -4,11 +4,11 @@
 
 # Manchester Encoder with Configurable Bitrate Based on CLB Using the PIC16F13145 Microcontroller with MCC Melody
 
-The repository contains a Manchester Encoder implementation in hardware using the Configurable Logic Block (CLB). It uses other peripherals to support the CLB including Timers (TMR0) and Universal Asynchronous Receiver-Transmitter (UART) peripherals.
+The repository contains a Manchester Encoder hardware implementation using the Configurable Logic Block (CLB). It uses other peripherals to support the CLB including Timers (TMR0) and Universal Asynchronous Receiver Transmitter (UART) peripherals.
 
-The CLB peripheral is a collection of logic elements that can be programmed to perform a wide variety of digital logic functions. The logic function may be completely combinatorial, sequential, or a combination of the two, enabling users to incorporate hardware-based custom logic into their applications.
+The CLB peripheral is a collection of logic elements that can be programmed to perform a wide variety of digital logic functions. The logic function may be completely combinatorial, sequential or a combination of the two, enabling users to incorporate hardware-based custom logic into their applications.
 
-The Manchester code combines data and clock into a single signal, where one clock cycle is a Manchester-bit period with a transition always occurring in the middle of it. Logic '0' is represented by a falling edge (HIGH to LOW transition) in the middle of the bit period, and logic '1' is represented by a rising edge (LOW to HIGH transition) in the middle of the bit period.
+The Manchester code combines data and clock into a single signal, where one clock cycle is a Manchester bit period with a transition always occurring in the middle of it. Logic `0` is represented by a falling edge (HIGH to LOW transition) in the middle of the bit period, and logic `1` is represented by a rising edge (LOW to HIGH transition) in the middle of the bit period.
 
 <br><img src="images/manchester_waveform.png" width="600">
 
@@ -25,7 +25,7 @@ More details and code examples on the PIC16F13145 can be found at the following 
 
 ## Software Used
 
-- [MPLAB X IDE v6.20 or newer](https://www.microchip.com/en-us/tools-resources/develop/mplab-x-ide?utm_source=GitHub&utm_medium=TextLink&utm_campaign=MCU8_MMTCha_PIC16F13145&utm_content=pic16f13145-manchester-encoder-mplab-mcc&utm_bu=MCU08)
+- [MPLAB® X IDE v6.20 or newer](https://www.microchip.com/en-us/tools-resources/develop/mplab-x-ide?utm_source=GitHub&utm_medium=TextLink&utm_campaign=MCU8_MMTCha_PIC16F13145&utm_content=pic16f13145-manchester-encoder-mplab-mcc&utm_bu=MCU08)
 - [MPLAB® XC8 v2.46 or newer](https://www.microchip.com/en-us/tools-resources/develop/mplab-xc-compilers?utm_source=GitHub&utm_medium=TextLink&utm_campaign=MCU8_MMTCha_PIC16F13145&utm_content=pic16f13145-manchester-encoder-mplab-mcc&utm_bu=MCU08)
 - [PIC16F1xxxx_DFP v1.25.390 or newer](https://packs.download.microchip.com/)
 
@@ -46,7 +46,7 @@ This project is a CIP implementation of a Manchester encoder with configurable b
 
 <br><img src="images/clb_encoder_circuit.PNG" width="1000">
 
-The ManchesterEncoder.clb file can be imported into [logic.microchip.com/clbsynthesizer](https://logic.microchip.com/clbsynthesizer/) to better view the circuit.
+The `ManchesterEncoder.clb` file can be imported into [logic.microchip.com/clbsynthesizer](https://logic.microchip.com/clbsynthesizer/) to better view the circuit.
 
 The CLB software input register is used for the encoder data and control functionality, as noted below:
 
@@ -54,15 +54,15 @@ The CLB software input register is used for the encoder data and control functio
 - Encoder reset (CLBSWIN[0])
 - Encoder enable (CLBSWIN[1])   
 
-The raw data is recevied via serial communication by the UART peripheral and stored in a buffer. The CPU writes the data to the encoder input register after which the encoder is enabled. The CLB internal Hardware Counter and four Lookup Tables (LUT) are used to select each data bit individually. The equivalent schematic of one LUT is presented below:
+The raw data is recevied via serial communication by the UART peripheral and stored in a buffer. The CPU writes the data to the encoder input register after which the encoder is enabled. The CLB internal Hardware Counter and four Look-up Tables (LUTs) are used to select each data bit individually. The equivalent schematic of one LUT is presented below:
 
 <br><img src="images/bit_selection_LUT.PNG" width="400">
 
-The Hardware Counter is an eight state ring counter meaning that only one data bit from the input register is selected at a specific time. This allows a parallel to serial transmission conversion of the data stored in the input register. The output stream is then Manchester-encoded using an additional LUT. Its equivalent schematic is presented below:
+The Hardware Counter is an eight state ring counter, meaning that only one data bit from the input register is selected at a specific time. This allows a parallel to serial transmission conversion of the data stored in the input register. The output stream is then Manchester-encoded using an additional LUT. Its equivalent schematic is presented below:
 
 <br><img src="images/encoder_LUT.PNG" width="400">
 
-To allow back-to-back data transmission, the last three data bits are buffered using additional flip-flops. When the Hardware Counter reaches the fourth state (COUNT_IS_4), the last three bits are loaded into the buffer (flip-flops) and an interrupt flag is set. The interrupt flag is used by the main application to either write the next byte to the encoder input data register or disable the encoder. These actions are performed only after the complete transmission of the current byte. The implemented logic uses the Timer 0 overflow (TMR0_OVF) to perform the Manchester-encoded signal transitions, and therefore the bitrate can be easily configured by modifing the TMR0 period.
+To allow back-to-back data transmission, the last three data bits are buffered using additional flip-flops. When the Hardware Counter reaches the fourth state (COUNT_IS_4), the last three bits are loaded into the buffer (flip-flops) and an interrupt flag is set. The interrupt flag is used by the main application to either write the next byte to the encoder input data register or disable the encoder. These actions are performed only after the complete transmission of the current byte. The implemented logic uses the Timer0 overflow (TMR0_OVF) to perform the Manchester-encoded signal transitions, and therefore the bitrate can be easily configured by modifing the TMR0 period.
 
 <br><img src="images/back_to_back_transmission.png" width="1000">
 
@@ -72,7 +72,7 @@ The following peripheral and clock configurations are set up using the MPLAB Cod
 
 1. Configuration Bits:
     - External Oscillator mode selection bits: Oscillator not enabled
-    - Power-up default value for COSC bits: HFINTOSC (1MHz)
+    - Power-up default value for COSC bits: HFINTOSC (1 MHz)
     - Brown-out reset enable bits: Brown-out reset disabled
     - WDT operating mode: WDT Disabled, SEN is ignored
     <br><img src="images/mcc_config_bits.PNG" width="400">
@@ -124,15 +124,15 @@ The following peripheral and clock configurations are set up using the MPLAB Cod
 
 ## Demo
 
-In the demo, the data frames received via CDC UART are transmitted as a Manchester-encoded data stream on the RB7 pin. The data frames should always end with ```0x0A, 0x0D```. 
+In the demo, the data frames received via CDC UART are transmitted as a Manchester-encoded data stream on the RB7 pin. The data frames should always end with ```0x0A```, ```0x0D```. 
 
-If the UART does not receive any character for 0.5s, the ```PIC16F13145 Manchester Encoder-Decoder\r\n``` message is transmitted via pin RB7 (Manchester-encoded). The encoder's output can be visualized using a logic analyzer.
+If the UART does not receive any character for 0.5s, the ```PIC16F13145 Manchester Encoder-Decoder\r\n``` message is transmitted via the RB7 pin (Manchester-encoded). The output of the encoder can be visualized using a logic analyzer.
 
 <br><img src="images/encoder_demo1.PNG" width="1000">
 <br><img src="images/encoder_demo2.PNG" width="1000">
 <br><img src="images/encoder_demo3.PNG" width="1000">
 
-To use the embedded decoder from the Logic software, the following analyzers settings must be done:
+To use the embedded decoder from the Logic software, the following analyzer settings must be done:
 
 <br><img src="images/encoder_logic_settings.PNG" width="400">
 
@@ -157,10 +157,11 @@ This chapter demonstrates how to use the MPLAB X IDE to program a PIC® device w
     <br>Right click the `Example_Project.X` project and select **Clean and Build**.
     <br><img src="images/Program_Clean_and_Build.png" width="600">
 
-5.  Select **PICxxxxx Curiosity Nano** in the Connected Hardware Tool section of the project settings:
+5.  Select PICxxxxx Curiosity Nano in the Connected Hardware Tool section of the project settings:
     <br>Right click the project and click **Properties**.
     <br>Click the arrow under the Connected Hardware Tool.
-    <br>Select **PICxxxxx Curiosity Nano** (click the **SN**), click **Apply** and then click **OK**:
+    <br>Select PICxxxxx Curiosity Nano by clicking on the SN.
+    <br>Click **Apply** and then **OK**.
     <br><img src="images/Program_Tool_Selection.png" width="600">
 
 6.  Program the project to the board.
