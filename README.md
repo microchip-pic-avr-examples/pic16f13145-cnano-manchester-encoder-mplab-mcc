@@ -27,7 +27,7 @@ More details and code examples on the PIC16F13145 can be found at the following 
 
 - [MPLAB® X IDE v6.20 or newer](https://www.microchip.com/en-us/tools-resources/develop/mplab-x-ide?utm_source=GitHub&utm_medium=TextLink&utm_campaign=MCU8_MMTCha_PIC16F13145&utm_content=pic16f13145-manchester-encoder-mplab-mcc&utm_bu=MCU08)
 - [MPLAB® XC8 v2.46 or newer](https://www.microchip.com/en-us/tools-resources/develop/mplab-xc-compilers?utm_source=GitHub&utm_medium=TextLink&utm_campaign=MCU8_MMTCha_PIC16F13145&utm_content=pic16f13145-manchester-encoder-mplab-mcc&utm_bu=MCU08)
-- [PIC16F1xxxx_DFP v1.25.390 or newer](https://packs.download.microchip.com/)
+- [PIC16F1xxxx_DFP v1.25.389 or newer](https://packs.download.microchip.com/)
 
 
 ## Hardware Used
